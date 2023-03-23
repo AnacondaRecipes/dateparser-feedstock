@@ -16,7 +16,7 @@ build:
     - dateparser-download = dateparser_cli.cli:entrance
 
 requirements:
-  build:
+  host:
     - python
     - pip
     - setuptools
