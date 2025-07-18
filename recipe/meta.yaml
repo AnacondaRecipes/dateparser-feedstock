@@ -43,12 +43,13 @@ requirements:
 {% set ignore_tests = ignore_tests + "test_langdetect" %}
 {% set ignore_tests = ignore_tests + ")" %}
 
+# Disable test on Windows. This test use time.tzset() but it's not exist on windows, 
+# this is POSIX call, so that test is failed
+{% set ignore_windows_tests = "not test_date" %}
+
 test:
   source_files:
     - tests
-    # Disable test on Windows. This test use time.tzset() but it's not exist on windows, 
-    # this is POSIX call, so that test is failed
-    - "tests/test_date.py"  # [not win]
   requires:
     - pip
     - pytest
@@ -56,7 +57,12 @@ test:
   commands:
     - pip check
     - dateparser-download --help
+    {% if win %}
+    - pytest tests -v -k "{{ ignore_tests }} and {{ ignore_windows_tests }}"
+    {% else %}
     - pytest tests -v -k "{{ ignore_tests }}"
+    {% endif %}
+
   imports:
     - dateparser
     - dateparser.calendars
