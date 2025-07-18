@@ -35,6 +35,17 @@ requirements:
     - numpy >=1.19.3,<2
     - langdetect >=1.0.0
 
+# Skipping tests that require optional extras (calendars, fasttext, langdetect),
+# which are not installed by default in the minimal build.
+{% set ignore_tests = "not (" %}
+{% set ignore_tests = ignore_tests + "test_calendars or " %}
+{% set ignore_tests = ignore_tests + "test_fasttext or " %}
+{% set ignore_tests = ignore_tests + "test_langdetect" %}
+{% if win %}
+{% set ignore_tests = ignore_tests + " or test_date_parser" %}
+{% endif %}
+{% set ignore_tests = ignore_tests + ")" %}
+
 test:
   source_files:
     - tests
@@ -45,9 +56,9 @@ test:
   commands:
     - pip check
     - dateparser-download --help
-    # - pytest tests -v -k "not (test_calendars or test_fasttext or test_langdetect or test_date)"
-    - pytest tests -v --ignore=tests/test_date.py --ignore=tests/test_calendars.py --ignore=tests/test_fasttext.py --ignore=tests/test_langdetect.py
-
+    # Disable import test_date.py on Windows. This test use time.tzset() POSIX call 
+    - pytest tests -v --ignore=tests/test_date.py -k "{{ ignore_tests }}"
+ 
   imports:
     - dateparser
     - dateparser.calendars
