@@ -1,4 +1,4 @@
-{% set version = "1.1.8" %}
+{% set version = "1.2.1" %}
 
 package:
   name: dateparser
@@ -6,12 +6,12 @@ package:
 
 source:
   url: https://pypi.io/packages/source/d/dateparser/dateparser-{{ version }}.tar.gz
-  sha256: 86b8b7517efcc558f085a142cdb7620f0921543fcabdb538c8a4c4001d8178e3
+  sha256: 7e4919aeb48481dbfc01ac9683c8e20bfe95bb715a38c1e9f6af889f4f30ccc3
 
 build:
   number: 0
-  script: {{ PYTHON }} -m pip install . -vv --no-deps --no-build-isolation
-  skip: True  # [py<37]
+  skip: True  # [py<38]
+  script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
   entry_points:
     - dateparser-download = dateparser_cli.cli:entrance
 
@@ -23,18 +23,37 @@ requirements:
     - wheel
   run:
     - python
-    - python-dateutil
-    - pytz
-    # https://bitbucket.org/mrabarnett/mrab-regex/issues/314/import-error-no-module-named
-    - regex !=2019.02.19,!=2021.8.27
-    - tzlocal
+    - python-dateutil >=2.7.0
+    - pytz >=2024.2
+    - regex !=2019.02.19,!=2021.8.27,>=2015.06.24
+    - tzlocal >=0.2
+
+  run_constrained:
+    - convertdate >=2.2.1
+    - hijridate
+    - fasttext >=0.9.1
+    - numpy >=1.19.3,<2
+    - langdetect >=1.0.0
+
+# Skipping tests that require optional extras (calendars, fasttext, langdetect),
+# which are not installed by default in the minimal build.
+{% set ignore_tests = "not (" %}
+{% set ignore_tests = ignore_tests + "test_calendars or " %}
+{% set ignore_tests = ignore_tests + "test_fasttext or " %}
+{% set ignore_tests = ignore_tests + "test_langdetect" %}
+{% set ignore_tests = ignore_tests + ")" %}
 
 test:
+  source_files:
+    - tests
   requires:
     - pip
+    - pytest
+    - parameterized
   commands:
     - pip check
     - dateparser-download --help
+    - pytest tests -v -k "{{ ignore_tests }}"
   imports:
     - dateparser
     - dateparser.calendars
@@ -43,14 +62,17 @@ test:
 
 about:
   home: https://github.com/scrapinghub/dateparser
+  dev_url: https://github.com/scrapinghub/dateparser
+  doc_url: https://dateparser.readthedocs.io
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
   summary: Date parsing library designed to parse dates from HTML pages
   description: |
-    Python parser for human readable dates.
-  dev_url: https://github.com/scrapinghub/dateparser
-  doc_url: https://github.com/scrapinghub/dateparser/blob/master/README.rst
+    Generic parsing of dates in over 200 language locales plus numerous formats
+    in a language agnostic fashion. Includes support for relative dates,
+    multiple calendar systems, timezone parsing, and flexible customization
+    through settings.
 extra:
   recipe-maintainers:
     - tacaswell
