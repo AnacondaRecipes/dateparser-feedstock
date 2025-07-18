@@ -37,15 +37,13 @@ requirements:
 
 # Skipping tests that require optional extras (calendars, fasttext, langdetect),
 # which are not installed by default in the minimal build.
-{% set ignore_tests = "not (" %}
-{% set ignore_tests = ignore_tests + "test_calendars or " %}
-{% set ignore_tests = ignore_tests + "test_fasttext or " %}
-{% set ignore_tests = ignore_tests + "test_langdetect" %}
-{% set ignore_tests = ignore_tests + ")" %}
-
+{% set ignore_tests = "not (test_calendars or test_fasttext or test_langdetect" %}
+{% if win %}
 # Disable test on Windows. This test use time.tzset() but it's not exist on windows, 
 # this is POSIX call, so that test is failed
-{% set ignore_windows_tests = "not test_date" %}
+{% set ignore_tests = ignore_tests + " or test_date" %}
+{% endif %}
+{% set ignore_tests = ignore_tests + ")" %}
 
 test:
   source_files:
@@ -57,11 +55,7 @@ test:
   commands:
     - pip check
     - dateparser-download --help
-    {% if win %}
-    - pytest tests -v -k "{{ ignore_tests }} and {{ ignore_windows_tests }}"
-    {% else %}
     - pytest tests -v -k "{{ ignore_tests }}"
-    {% endif %}
 
   imports:
     - dateparser
