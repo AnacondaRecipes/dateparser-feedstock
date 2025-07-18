@@ -46,6 +46,9 @@ requirements:
 test:
   source_files:
     - tests
+    # Disable test on Windows. This test use time.tzset() but it's not exist on windows, 
+    # this is POSIX call, so that test is failed
+    - "tests/test_date.py"  # [not win]
   requires:
     - pip
     - pytest
