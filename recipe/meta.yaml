@@ -45,8 +45,7 @@ test:
   commands:
     - pip check
     - dateparser-download --help
-    - pytest tests -v -k "not (test_calendars or test_fasttext or test_langdetect)"  # [not win]
-    - pytest tests -v -k "not (test_calendars or test_fasttext or test_langdetect or test_date)"  # [win]
+    - pytest tests -v -k "not (test_calendars or test_fasttext or test_langdetect or test_date)"
 
   imports:
     - dateparser
