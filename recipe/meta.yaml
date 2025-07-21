@@ -36,13 +36,25 @@ requirements:
 
 # Skipping tests that require optional extras (calendars, fasttext, langdetect),
 # which are not installed by default in the minimal build.
-{% set ignore_tests = "not (" %}
-{% set ignore_tests = ignore_tests + "test_fasttext or " %}
-{% set ignore_tests = ignore_tests + "test_langdetect" %}
-{% if win %}
-{% set ignore_tests = ignore_tests + " or test_date_parser" %}
-{% endif %}
-{% set ignore_tests = ignore_tests + ")" %}
+# {% set ignore_tests = "not (" %}
+# {% set ignore_tests = ignore_tests + "test_fasttext or " %}
+# {% set ignore_tests = ignore_tests + "test_langdetect" %}
+# {% if win %}
+# {% set ignore_tests = ignore_tests + " or test_date_parser" %} 
+# {% endif %}
+# {% set ignore_tests = ignore_tests + ")" %}
+
+
+# {% set ignore_tests = "not (" %}
+# {% set ignore_tests = ignore_tests + "test_fasttext or " %}
+# {% set ignore_tests = ignore_tests + "test_langdetect" %}
+ {% set ignore_tests = " test_date_parser" %} # [win]
+# {% set ignore_tests = ignore_tests + ")" %}
+
+# {% set ignore_tests = "" %}
+# {% set ignore_tests = " --ignore=tests/async_torch_test.py" %}
+# {% set ignore_tests = ignore_tests + " --ignore=tests/async_writes_test.py" %}
+
 
 test:
   source_files:
@@ -56,13 +68,31 @@ test:
     - pip check
     - dateparser-download --help
     # Disable import test_date.py on Windows. This test use time.tzset() POSIX call 
-    - pytest tests -v --ignore=tests/test_date.py -k "{{ ignore_tests }}"
+    # - pytest tests -v --ignore=tests/test_date.py -k "{{ ignore_tests }}"
+    - pytest tests -v  # [not win]
+    - pytest tests -v --ignore=tests/test_date.py -k "{{ ignore_tests }}"  # [win]
  
   imports:
     - dateparser
     - dateparser.calendars
+    - dateparser.conf
+    - dateparser.custom_language_detection.language_mapping
+    - dateparser.data
+    - dateparser.data.languages_info
+    - dateparser.date
+    - dateparser.date_parser
+    - dateparser.freshness_date_parser
     - dateparser.languages
+    - dateparser.languages.loader
+    - dateparser.languages.validation
+    - dateparser.parser
+    - dateparser.search
+    - dateparser.search.detection
+    - dateparser.search.search
+    - dateparser.search.text_detection
+    - dateparser.timezone_parser
     - dateparser.utils
+    - dateparser.utils.strptime
 
 about:
   home: https://github.com/scrapinghub/dateparser
