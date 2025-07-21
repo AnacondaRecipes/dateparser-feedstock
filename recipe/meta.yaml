@@ -10,7 +10,7 @@ source:
 
 build:
   number: 0
-  skip: True  # [py<38]
+  skip: True  # [py<39]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
   entry_points:
     - dateparser-download = dateparser_cli.cli:entrance
@@ -37,7 +37,6 @@ requirements:
 # Skipping tests that require optional extras (calendars, fasttext, langdetect),
 # which are not installed by default in the minimal build.
 {% set ignore_tests = "not (" %}
-{% set ignore_tests = ignore_tests + "test_calendars or " %}
 {% set ignore_tests = ignore_tests + "test_fasttext or " %}
 {% set ignore_tests = ignore_tests + "test_langdetect" %}
 {% if win %}
@@ -52,6 +51,7 @@ test:
     - pip
     - pytest
     - parameterized
+    - convertdate >=2.2.1
   commands:
     - pip check
     - dateparser-download --help
