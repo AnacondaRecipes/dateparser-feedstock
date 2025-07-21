@@ -1,16 +1,17 @@
+{% set name = "dateparser" %}
 {% set version = "1.2.2" %}
 
 package:
-  name: dateparser
+  name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/d/dateparser/dateparser-{{ version }}.tar.gz
+  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
   sha256: 986316f17cb8cdc23ea8ce563027c5ef12fc725b6fb1d137c14ca08777c5ecf7
 
 build:
   number: 0
-  skip: True  # [py<39]
+  skip: True  # [py<38]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
   entry_points:
     - dateparser-download = dateparser_cli.cli:entrance
@@ -36,25 +37,9 @@ requirements:
 
 # Skipping tests that require optional extras (calendars, fasttext, langdetect),
 # which are not installed by default in the minimal build.
-# {% set ignore_tests = "not (" %}
-# {% set ignore_tests = ignore_tests + "test_fasttext or " %}
-# {% set ignore_tests = ignore_tests + "test_langdetect" %}
-# {% if win %}
-# {% set ignore_tests = ignore_tests + " or test_date_parser" %} 
-# {% endif %}
-# {% set ignore_tests = ignore_tests + ")" %}
-
-
-# {% set ignore_tests = "not (" %}
-# {% set ignore_tests = ignore_tests + "test_fasttext or " %}
-# {% set ignore_tests = ignore_tests + "test_langdetect" %}
- {% set ignore_tests = " test_date_parser" %} # [win]
-# {% set ignore_tests = ignore_tests + ")" %}
-
-# {% set ignore_tests = "" %}
-# {% set ignore_tests = " --ignore=tests/async_torch_test.py" %}
-# {% set ignore_tests = ignore_tests + " --ignore=tests/async_writes_test.py" %}
-
+{% set deselect_tests = " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_0__1484823450" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_1__1436745600000" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_2__1015673450000001" %}
 
 test:
   source_files:
@@ -67,11 +52,10 @@ test:
   commands:
     - pip check
     - dateparser-download --help
-    # Disable import test_date.py on Windows. This test use time.tzset() POSIX call 
-    # - pytest tests -v --ignore=tests/test_date.py -k "{{ ignore_tests }}"
     - pytest tests -v  # [not win]
-    - pytest tests -v --ignore=tests/test_date.py -k "{{ ignore_tests }}"  # [win]
- 
+    # Disable import test_date.py on Windows. This test use time.tzset() POSIX call 
+    - pytest tests -v --ignore=tests/test_date.py {{ deselect_tests }}  # [win]
+
   imports:
     - dateparser
     - dateparser.calendars
