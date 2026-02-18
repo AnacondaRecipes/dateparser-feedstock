@@ -1,17 +1,20 @@
 {% set name = "dateparser" %}
-{% set version = "1.2.2" %}
+{% set version = "1.3.0" %}
+{% set deselect_tests = " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_0__1484823450" %}
+{% set deselect_tests = 'deselect_tests + " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_1__1436745600000"' %}
+{% set deselect_tests = 'deselect_tests + " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_2__1015673450000001"' %}
 
 package:
   name: {{ name }}
   version: {{ version }}
 
 source:
-  url: https://pypi.io/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 986316f17cb8cdc23ea8ce563027c5ef12fc725b6fb1d137c14ca08777c5ecf7
+  url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
+  sha256: 5bccf5d1ec6785e5be71cc7ec80f014575a09b4923e762f850e57443bddbf1a5
 
 build:
   number: 0
-  skip: True  # [py<38]
+  skip: true  # [py<310]
   script: {{ PYTHON }} -m pip install . --no-deps --no-build-isolation --ignore-installed --no-cache-dir -vv
   entry_points:
     - dateparser-download = dateparser_cli.cli:entrance
@@ -28,19 +31,14 @@ requirements:
     - pytz >=2024.2
     - regex >=2024.9.11
     - tzlocal >=0.2
-
   run_constrained:
     - convertdate >=2.2.1
     - fasttext >=0.9.1
-    - numpy >=1.19.3,<2
+    - numpy >=1.22.0,<2
     - langdetect >=1.0.0
 
 # Skipping tests that require optional extras (calendars, fasttext, langdetect),
 # which are not installed by default in the minimal build.
-{% set deselect_tests = " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_0__1484823450" %}
-{% set deselect_tests = deselect_tests + " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_1__1436745600000" %}
-{% set deselect_tests = deselect_tests + " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_2__1015673450000001" %}
-
 test:
   source_files:
     - tests
@@ -53,9 +51,8 @@ test:
     - pip check
     - dateparser-download --help
     - pytest tests -v  # [not win]
-    # Disable import test_date.py on Windows. This test use time.tzset() POSIX call 
+    # Disable import test_date.py on Windows. This test use time.tzset() POSIX call
     - pytest tests -v --ignore=tests/test_date.py {{ deselect_tests }}  # [win]
-
   imports:
     - dateparser
     - dateparser.calendars
@@ -91,6 +88,8 @@ about:
     in a language agnostic fashion. Includes support for relative dates,
     multiple calendar systems, timezone parsing, and flexible customization
     through settings.
+
+
 extra:
   recipe-maintainers:
     - tacaswell
