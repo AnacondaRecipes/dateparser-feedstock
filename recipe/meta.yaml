@@ -1,11 +1,6 @@
 {% set name = "dateparser" %}
 {% set version = "1.4.1" %}
-{% set deselect_tests = " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_0__1484823450" %}
-{% set deselect_tests = 'deselect_tests + " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_1__1436745600000"' %}
-{% set deselect_tests = 'deselect_tests + " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_2__1015673450000001"' %}
 
-# Skipping tests that require optional extras (calendars, fasttext, langdetect),
-# which are not installed by default in the minimal build.
 package:
   name: {{ name }}
   version: {{ version }}
@@ -34,9 +29,13 @@ requirements:
     - tzlocal >=0.2
   run_constrained:
     - convertdate >=2.2.1
-    - fasttext >=0.9.1
-    - numpy >=1.22.0,<2
     - langdetect >=1.0.0
+
+# Skipping tests that require optional extras (calendars, fasttext, langdetect),
+# which are not installed by default in the minimal build.
+{% set deselect_tests = " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_0__1484823450" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_1__1436745600000" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_2__1015673450000001" %}
 
 test:
   source_files:
@@ -76,8 +75,6 @@ test:
 
 about:
   home: https://github.com/scrapinghub/dateparser
-  dev_url: https://github.com/scrapinghub/dateparser
-  doc_url: https://dateparser.readthedocs.io
   license: BSD-3-Clause
   license_family: BSD
   license_file: LICENSE
@@ -87,6 +84,8 @@ about:
     in a language agnostic fashion. Includes support for relative dates,
     multiple calendar systems, timezone parsing, and flexible customization
     through settings.
+  dev_url: https://github.com/scrapinghub/dateparser
+  doc_url: https://dateparser.readthedocs.io
 
 
 
