@@ -86,16 +86,6 @@ about:
     through settings.
   dev_url: https://github.com/scrapinghub/dateparser
   doc_url: https://dateparser.readthedocs.io
-
-
-
-
-
-
-
-
-
-
 extra:
   recipe-maintainers:
     - tacaswell
