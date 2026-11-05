@@ -31,8 +31,15 @@ requirements:
     - convertdate >=2.2.1
     - langdetect >=1.0.0
 
-# Tests for the optional extras (calendars, langdetect) skip themselves via
-# pytest.importorskip when the extra is not installed; no deselects are needed.
+# Optional-extra tests (calendars, langdetect, hijridate) skip themselves via
+# pytest.importorskip when the extra is not installed, so no deselects are needed
+# for them.
+# The negative-timestamp assertions resolve pre-1970 timestamps against the local
+# tz database and fail on Windows; keep them deselected there.
+{% set deselect_tests = " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_0__1484823450" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_1__1436745600000" %}
+{% set deselect_tests = deselect_tests + " --deselect=tests/test_date_parser.py::TestDateParser::test_parse_negative_timestamp_2__1015673450000001" %}
+
 test:
   source_files:
     - tests
@@ -62,7 +69,7 @@ test:
     - dateparser-download --help
     - pytest tests -vv  # [not win]
     # Disable import test_date.py on Windows. This test use time.tzset() POSIX call
-    - pytest tests -vv --ignore=tests/test_date.py  # [win]
+    - pytest tests -vv --ignore=tests/test_date.py {{ deselect_tests }}  # [win]
   requires:
     - pip
     - pytest
