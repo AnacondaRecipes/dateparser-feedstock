@@ -1,5 +1,5 @@
 {% set name = "dateparser" %}
-{% set version = "1.5.0" %}
+{% set version = "1.5.1" %}
 
 package:
   name: {{ name }}
@@ -7,7 +7,7 @@ package:
 
 source:
   url: https://pypi.org/packages/source/{{ name[0] }}/{{ name }}/{{ name }}-{{ version }}.tar.gz
-  sha256: 08d62f2c00d3a1e806fc59d40c79e7554e31d84d3b8c6145820af051c92e7292
+  sha256: 1c3d4a568b4f4d615adfc2945b54596adffc14f955c9b435030b5236226a4366
 
 build:
   number: 0
@@ -28,6 +28,8 @@ requirements:
     - regex >=2024.9.11
     - tzlocal >=0.2
   run_constrained:
+    # from upstream `calendars` and `langdetect` extras; hijridate (also in
+    # `calendars`) is unbounded upstream, so it would be a run_constrained no-op
     - convertdate >=2.2.1
     - langdetect >=1.0.0
 
